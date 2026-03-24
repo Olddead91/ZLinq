@@ -1,10 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Collections.Generic;
-using System.Reflection;
-using Xunit;
-
 namespace ZLinq.Tests
 {
     public class SkipTests : EnumerableTests
@@ -534,6 +530,36 @@ namespace ZLinq.Tests
 
             iterator.Dispose();
             Assert.Equal(-1, state);
+        }
+
+        [Fact]
+        public void SkipMoreThanCountFollowedByOperators()
+        {
+            int[] items = [2, 3];
+
+            foreach (IEnumerable<int> source in CreateSources([1]))
+            {
+                Assert.Equal(items, source.Skip(2).Concat(items).ToArray());
+                Assert.Equal(items, source.Skip(2).Concat(items).ToList());
+                Assert.Equal(items, source.Skip(2).Append(2).Append(3).ToArray());
+                Assert.Equal(items, source.Skip(2).Append(2).Append(3).ToList());
+                Assert.Equal(items, items.Concat(source.Skip(2)).ToArray());
+                Assert.Equal(items, items.Concat(source.Skip(2)).ToList());
+                Assert.Empty(source.Skip(2).Select(x => x * 2).ToArray());
+                Assert.Empty(source.Skip(2).Select(x => x * 2).ToList());
+                Assert.Empty(source.Skip(2).Where(x => x > 0).ToArray());
+                Assert.Empty(source.Skip(2).Where(x => x > 0).ToList());
+                Assert.Empty(source.Skip(2).Take(10).ToArray());
+                Assert.Empty(source.Skip(2).Take(10).ToList());
+                Assert.Empty(source.Skip(2).Skip(1).ToArray());
+                Assert.Empty(source.Skip(2).Skip(1).ToList());
+                Assert.Empty(source.Skip(2).Distinct().ToArray());
+                Assert.Empty(source.Skip(2).Distinct().ToList());
+                Assert.Empty(source.Skip(2).OrderBy(x => x).ToArray());
+                Assert.Empty(source.Skip(2).OrderBy(x => x).ToList());
+                Assert.False(source.Skip(2).Contains(1));
+                Assert.False(source.Skip(2).Contains(2));
+            }
         }
     }
 }

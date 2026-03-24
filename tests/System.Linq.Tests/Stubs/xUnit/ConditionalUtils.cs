@@ -19,7 +19,7 @@ internal static class ConditionalUtils
         {
             switch (key)
             {
-                case "IsThreadingSupported" when PlatformDetection.IsThreadingSupported:
+                case "IsMultithreadingSupported" when PlatformDetection.IsMultithreadingSupported:
                 case "IsDebuggerTypeProxyAttributeSupported" when PlatformDetection.IsDebuggerTypeProxyAttributeSupported:
                 case "IsNotBuiltWithAggressiveTrimming" when PlatformDetection.IsNotBuiltWithAggressiveTrimming:
 

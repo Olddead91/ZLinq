@@ -53,7 +53,7 @@ public static partial class PlatformDetection
     public static bool IsNotBrowser => !IsBrowser;
     public static bool IsWasi => RuntimeInformation.IsOSPlatform(OSPlatform.Create("WASI"));
     public static bool IsWasmThreadingSupported => IsBrowser && IsEnvironmentVariableTrue("IsBrowserThreadingSupported");
-    public static bool IsThreadingSupported => (!IsWasi && !IsBrowser) || IsWasmThreadingSupported;
+    public static bool IsMultithreadingSupported => (!IsWasi && !IsBrowser) || IsWasmThreadingSupported;
 
     public static bool IsBuiltWithAggressiveTrimming => IsNativeAot || IsAppleMobile;
     public static bool IsNotBuiltWithAggressiveTrimming => !IsBuiltWithAggressiveTrimming;

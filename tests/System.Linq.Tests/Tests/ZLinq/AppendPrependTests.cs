@@ -1,14 +1,32 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using Xunit;
+using System.Collections;
+using System.Collections.Concurrent;
 
 namespace ZLinq.Tests
 {
     public class AppendPrependTests : EnumerableTests
     {
+        // Mock collection for testing overflow without allocating memory
+        private sealed class MockCollection<T> : ICollection<T>
+        {
+            private readonly int _count;
+
+            public MockCollection(int count) => _count = count;
+
+            public int Count => _count;
+            public bool IsReadOnly => true;
+
+            public void Add(T item) => throw new NotSupportedException();
+            public void Clear() => throw new NotSupportedException();
+            public bool Contains(T item) => false;
+            public void CopyTo(T[] array, int arrayIndex) { }
+            public bool Remove(T item) => throw new NotSupportedException();
+            public IEnumerator<T> GetEnumerator() => Enumerable.Empty<T>().GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         [Fact]
         public void SameResultsRepeatCallsIntQueryAppend()
         {
@@ -262,6 +280,84 @@ namespace ZLinq.Tests
             Assert.Equal(42, NumberRangeGuaranteedNotCollectionType(84, 1).Prepend(42).ElementAt(0));
             Assert.Equal(84, NumberRangeGuaranteedNotCollectionType(42, 1).Append(84).ElementAt(1));
             Assert.Equal(84, NumberRangeGuaranteedNotCollectionType(84, 1).Prepend(42).ElementAt(1));
+        }
+
+        [Fact]
+        public void AppendOverflowCount()
+        {
+            // AppendPrepend1Iterator overflow when source has GetCount optimization
+            var source = Enumerable.Repeat(0, int.MaxValue);
+
+            Assert.Throws<OverflowException>(() =>
+            {
+                var appended = source.Append(1);
+                appended.Count();
+            });
+        }
+
+        [Fact]
+        public void PrependOverflowCount()
+        {
+            // AppendPrepend1Iterator overflow when source has GetCount optimization
+            var source = Enumerable.Repeat(0, int.MaxValue);
+
+            Assert.Throws<OverflowException>(() =>
+            {
+                var prepended = source.Prepend(1);
+                prepended.Count();
+            });
+        }
+
+        [Fact]
+        public void AppendPrependNOverflowCount()
+        {
+            // AppendPrependN overflow when source has GetCount optimization
+            var source = Enumerable.Repeat(0, int.MaxValue);
+
+            Assert.Throws<OverflowException>(() =>
+            {
+                var result = source.Append(1).Prepend(2);
+                result.Count();
+            });
+        }
+
+        [Fact(Skip = SkipReason.Issue0242)]
+        public void AppendOverflowCountWithICollection()
+        {
+            // AppendPrepend1Iterator overflow when source is ICollection
+            var source = new MockCollection<int>(int.MaxValue);
+
+            Assert.Throws<OverflowException>(() =>
+            {
+                var appended = source.Append(1);
+                appended.Count();
+            });
+        }
+
+        [Fact(Skip = SkipReason.Issue0242)]
+        public void PrependOverflowCountWithICollection()
+        {
+            // AppendPrepend1Iterator overflow when source is ICollection
+            var source = new MockCollection<int>(int.MaxValue);
+
+            Assert.Throws<OverflowException>(() =>
+            {
+                var prepended = source.Prepend(1);
+                prepended.Count();
+            });
+        }
+
+        [Fact(Skip = SkipReason.Issue0242)]
+        public void AppendPrependNOverflowCountWithICollection()
+        {
+            // AppendPrependN overflow when source is ICollection
+            var source = new MockCollection<int>(int.MaxValue-2);
+
+            Assert.Throws<OverflowException>(() =>
+            {
+                var result = source.Append(1).Prepend(2);
+                result.Count();
+            });
         }
     }
 }

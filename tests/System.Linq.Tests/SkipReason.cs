@@ -34,6 +34,12 @@ public static class SkipReason
     public const string EnumeratorReset = "ZLinq don't support Enumerator.Reset() API.";
 
     /// <summary>
+    /// Custom enumerator is not used by ZLinq optimization.
+    /// If target collection implements collection interfaces other than IEnumerable.
+    /// </summary>
+    public const string CustomEnumerator = "Custom enumerator is not used by ZLinq optimization.";
+
+    /// <summary>
     /// ZLinq don't support CreateOrderedEnumerable API
     /// </summary>
     public const string CreateOrderedEnumerable = "There is no compatibility. And it's not expected be supported by ZLinq. " +
@@ -73,7 +79,14 @@ public static class SkipReason
     /// ZLinq's query can't re-assign to variable when ValueEnumerable type is different.
     /// </summary>
     public const string Issue0096 = "ZLinq don't support reuse variables if ValueEnumerable type is different. " +
-                                    "See: https://github.com/Cysharp/ZLinq/issues/0096";
+                                    "See: https://github.com/Cysharp/ZLinq/issues/96";
+
+    /// <summary>
+    /// When using Count() with ICollection based collection.
+    /// OverflowException is not thrown as expected, and return wrong value.
+    /// </summary>
+    public const string Issue0242 = "Count() return wrong value when using ZLinq with ICollection<T> based collection. " +
+                                    "See: https://github.com/Cysharp/ZLinq/issues/242";
 
     // Dummy code.
     public const string ZLinq_IssueNNNN = "See: https://github.com/Cysharp/ZLinq/issues/{placeholder}";

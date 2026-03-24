@@ -21,11 +21,9 @@
   </PropertyGroup>
 
   <!-- Add .NET 11 support if .NET 11 or later version of MSBuild is used. -->
-  <!--
   <PropertyGroup Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreAppMaximumVersion)','11.0'))">
     <TargetFrameworks>$(TargetFrameworks);net11.0</TargetFrameworks>
   </PropertyGroup>
-  -->
 
   <ItemGroup>
     <None Remove="$(MSBuildThisFileName).slnx" />
@@ -33,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit.v3" Version="3.0.1" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
   </ItemGroup>
 
